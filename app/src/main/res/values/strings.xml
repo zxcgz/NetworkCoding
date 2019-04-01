@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">NetworkCoding</string>
+    <string name="menu_side">navigation</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">NetworkCoding</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_history">History</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_receive">Receive</string>
+
 </resources>

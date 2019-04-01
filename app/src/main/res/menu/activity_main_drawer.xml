@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/history"
+            android:icon="@drawable/menu_history"
+            android:title="@string/menu_history"
+            android:checked="true"/>
+        <item
+            android:id="@+id/send"
+            android:icon="@drawable/menu_send"
+            android:title="@string/menu_send" />
+        <item
+            android:id="@+id/receive"
+            android:icon="@drawable/menu_receive"
+            android:title="@string/menu_receive" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>
