@@ -1,17 +1,22 @@
-package com.zxc.network_coding.view;
+package com.zxc.network_coding.ui.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
 import com.zxc.network_coding.R;
-import com.zxc.network_coding.controller.MainNavItemSelectedListener;
+import com.zxc.network_coding.controller.listener.MainNavItemSelectedListener;
+import com.zxc.network_coding.service.INetworkServiceBinder;
+import com.zxc.network_coding.service.NetworkServiceConnection;
+import com.zxc.network_coding.ui.view.MainContentView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView() ;
-        initData() ;
+        initView();
+        initData();
+        /**/
     }
 
     /**
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initView() {
         //setContentView(R.layout.activity_main);
-        View view = View.inflate(this,R.layout.activity_main,null) ;
+        View view = View.inflate(this, R.layout.activity_main, null);
         setContentView(view);
         mMenuSide = findViewById(R.id.menu_side);
         mToolbar = findViewById(R.id.toolbar);
@@ -64,9 +70,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mMenuSide = null ;
-        mDrawerLayout = null ;
-        mToolbar = null ;
+        mMenuSide = null;
+        mDrawerLayout = null;
+        mToolbar = null;
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (MainContentView.mMainContentView != null) {
+            MainContentView.mMainContentView.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

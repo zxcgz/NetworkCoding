@@ -1,16 +1,18 @@
-package com.zxc.network_coding.controller;
+package com.zxc.network_coding.controller.listener;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.view.MenuItem;
-import android.view.View;
+
 import com.google.android.material.navigation.NavigationView;
 import com.zxc.network_coding.R;
-import com.zxc.network_coding.view.MainHistoryContentView;
+import com.zxc.network_coding.ui.view.MainContentView;
+import com.zxc.network_coding.ui.view.MainHistoryContentView;
+import com.zxc.network_coding.ui.view.MainSendContentView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -21,12 +23,16 @@ public class MainNavItemSelectedListener
     private Context mContext = null ;
     private Activity mActivity = null ;
     private ConstraintLayout mLayout = null ;
+
     public MainNavItemSelectedListener(Context context){
         mContext = context ;
         mActivity = (Activity) mContext;
+        MainContentView.mMainContentView = new MainHistoryContentView(mContext) ;
         mLayout = mActivity.findViewById(R.id.content_main) ;
         mLayout.removeAllViews();
-        mLayout.addView(new MainHistoryContentView(mContext));
+        mLayout.removeAllViewsInLayout();
+        mLayout.addView(MainContentView.mMainContentView);
+
     }
     private MainNavItemSelectedListener(){}
 
@@ -34,25 +40,26 @@ public class MainNavItemSelectedListener
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handle navigation mView item clicks here.
+        MainContentView.mMainContentView = null ;
         mLayout.removeAllViews();
-        View view = null ;
+        mLayout.removeAllViewsInLayout();
+        //Menu menu = toolbar.getMenu();
+        //menu.findItem(R.menu.view_send) ;
         int id = item.getItemId();
         switch (id){
             case R.id.history:
-                view = new MainHistoryContentView(mContext) ;
-                Toolbar toolbar = mActivity.findViewById(R.id.toolbar);
-                toolbar.setTitle("History");
+                MainContentView.mMainContentView = new MainHistoryContentView(mContext) ;
                 break;
             case R.id.send :
-                view = new MainHistoryContentView(mContext) ;
+                MainContentView.mMainContentView = new MainSendContentView(mContext) ;
                 break;
             case R.id.receive:
-                view = new MainHistoryContentView(mContext) ;
+                MainContentView.mMainContentView = new MainHistoryContentView(mContext) ;
                 break;
 
         }
-        mLayout.addView(view);
+        mLayout.addView(MainContentView.mMainContentView);
         DrawerLayout drawer = mActivity.findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -160,7 +160,7 @@ Java_com_zxc_jni_MatrixJNI_inverse(JNIEnv *env, jobject instance, jbyteArray arr
     /************************************************************************/
     for (int i = 0; i < nCol; i++) {
         for (int j = i + 1; j < nCol; j++) {
-            // Now, the main element must be nonsingular.
+            // Now, the view_send element must be nonsingular.
             FFType temp = ff_div(M[j][i], M[i][i]);
 
             for (int z = 0; z < nCol; z++) {
@@ -299,11 +299,11 @@ int getRank(JNIEnv *env,jbyteArray matrix,int nRow,int nCol){
         }
     }
 
-    // Define a variable to record the position of the main element.
+    // Define a variable to record the position of the view_send element.
     int yPos = 0;
 
     for (int i = 0; i < nRow; i++) {
-        // Find the main element which must be non-zero.
+        // Find the view_send element which must be non-zero.
         bool bFind = false;
         for (int x = yPos; x < nCol; x++) {
             for (int k = i; k < nRow; k++) {
@@ -325,7 +325,7 @@ int getRank(JNIEnv *env,jbyteArray matrix,int nRow,int nCol){
         }
 
         for (int j = i + 1; j < nRow; j++) {
-            // Now, the main element must be nonsingular.
+            // Now, the view_send element must be nonsingular.
             unsigned int temp = ff_div(M[j][yPos], M[i][yPos]);
             for (int z = 0; z < nCol; z++) {
                 M[j][z] = (jboolean) (ff_add(M[j][z], ff_mul(temp, M[i][z])));
@@ -341,7 +341,7 @@ int getRank(JNIEnv *env,jbyteArray matrix,int nRow,int nCol){
     for (int i = 1; i < nRow; i++) {
         for (int j = 0; j < nCol; j++) {
             if (M[i][j] != 0) {
-                // the main element is found.
+                // the view_send element is found.
                 yPos = j;
                 break;
             }

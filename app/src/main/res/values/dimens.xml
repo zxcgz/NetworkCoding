@@ -5,4 +5,16 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <!--Dialog相关的数据-->
+    <dimen name="dialog_text_title_size">25sp</dimen>
+    <dimen name="dialog_text_content_size">20sp</dimen>
+    <dimen name="dialog_top_padding">20dp</dimen>
+    <dimen name="dialog_bottom_padding">20dp</dimen>
+    <dimen name="view_padding">20dp</dimen>
+    <!--material风格的AlterDialog底部按钮的相关数据-->
+    <dimen name="dialog_button_layout_height">52dp</dimen>
+    <dimen name="dialog_button_text_layout_height">36dp</dimen>
+    <dimen name="dialog_button_text_padding">10dp</dimen>
+    <dimen name="dialog_button_text_size">15sp</dimen>
+    <dimen name="dialog_button_text_layout_marginRight">8dp</dimen>
 </resources>
