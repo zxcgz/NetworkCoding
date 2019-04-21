@@ -1,4 +1,4 @@
-package com.zxc.network_coding.service;
+package com.zxc.network_coding.service.network;
 
 import java.util.Map;
 import java.util.Set;
@@ -26,13 +26,20 @@ public interface INetworkServiceBinder {
 
     /**
      * 发送消息
+     * @param tag   消息类型
      * @param msg   消息内容
      */
-    void sendMessage(String msg) ;
+    void sendMessage(String tag,String msg) ;
 
     /**
-     * 获取ip集合
-     * @return  返回一个Map，Map中包含ip地址和port值
+     * 注册监听
+     * @param listener
      */
-    Map<String,String> getIpSet() ;
+    void registerListener(NetworkService.NetworkListener listener) ;
+    /**
+     * 移除注册的监听
+     *
+     * @param listener
+     */
+    void unregisterListener(NetworkService.NetworkListener listener) ;
 }

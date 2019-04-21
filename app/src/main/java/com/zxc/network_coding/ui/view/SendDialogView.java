@@ -3,6 +3,7 @@ package com.zxc.network_coding.ui.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.zxc.network_coding.R;
+import com.zxc.network_coding.service.sendFile.SendFileService;
+import com.zxc.network_coding.service.sendFile.SendFileServiceConnection;
 import com.zxc.network_coding.utils.FileUtils;
 
 import org.w3c.dom.Text;
@@ -91,6 +94,9 @@ public class SendDialogView extends AlertDialog
             case R.id.positive:
                 this.setCancelable(false) ;
                 //dismiss之前将相关数据存储到数据库中，并在后台启动相关服务来进行数据处理与传输
+                Intent intent = new Intent(mContext, SendFileService.class) ;
+                intent.setData(mUri) ;
+                mContext.bindService(intent, SendFileServiceConnection.getInstance(),Context.BIND_AUTO_CREATE) ;
                 dismiss();
                 break;
             case R.id.negative:

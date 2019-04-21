@@ -4,27 +4,43 @@
     package="com.zxc.network_coding">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
+        android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-        android:name=".Application">
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.zxc.network_coding.ui.activity.MainActivity" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
-            android:name=".service.NetworkService"
+            android:name=".service.network.NetworkService"
             android:label="@string/app_name" />
+        <service android:name=".service.sendFile.SendFileService" />
+        <service android:name=".service.socket.receive.SocketReceiveService" />
+        <service android:name=".service.socket.send.SocketSendService" />
     </application>
 
 </manifest>

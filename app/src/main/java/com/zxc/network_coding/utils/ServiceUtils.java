@@ -2,8 +2,10 @@ package com.zxc.network_coding.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.ServiceConnection;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ServiceUtils {

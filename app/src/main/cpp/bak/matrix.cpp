@@ -55,38 +55,43 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_zxc_jni_MatrixJNI_init(JNIEnv *env, jobject instance, jint m) {
     jint i = 0, j = 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
     if (m > 12)
         return;
     fFieldSize = 1 << m;
+    __android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
     int prim = prim_poly[m];
     /*if (prim == 0)
         prim = prim_poly[m];*/
-    table_alpha = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-    table_index = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-    table_div = (FFType **) malloc(sizeof(FFType *)*fFieldSize);
-    table_mul = (FFType **) malloc(sizeof(FFType *)*fFieldSize);
+    table_alpha = (FFType *) malloc(sizeof(FFType));
+    table_index = (FFType *) malloc(sizeof(FFType));
+    table_div = (FFType **) malloc(sizeof(FFType *));
+    table_mul = (FFType **) malloc(sizeof(FFType *));
     for (i = 0; i < fFieldSize; i++) {
-        table_mul[i] = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-        table_div[i] = (FFType *) malloc(sizeof(FFType)*fFieldSize);
+        table_mul[i] = (FFType *) malloc(sizeof(FFType));
+        table_div[i] = (FFType *) malloc(sizeof(FFType));
     }
     table_alpha[0] = 1;
     //TODO 无符号整型中的-1
     table_index[0] = -1;
+    __android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
     for (i = 1; i < fFieldSize; i++) {
         table_alpha[i] = table_alpha[i - 1] << 1;
         if (table_alpha[i] >= fFieldSize) {
             table_alpha[i] ^= prim;
+            //__android_log_print(ANDROID_LOG_DEBUG, "For Test", "i:%d,table_alpha[i]:%d,prim:%d",i,table_alpha[i],prim);
         }
         table_index[table_alpha[i]] = i;
     }
     table_index[1] = 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
     for (i = 0; i < fFieldSize; i++) {
         for (j = 0; j < fFieldSize; ++j) {
             table_mul[i][j] = multiplication(i, j);
             table_div[i][j] = division(i, j);
-            /*__android_log_print(ANDROID_LOG_DEBUG, "FOR TEST",
+            __android_log_print(ANDROID_LOG_DEBUG, "FOR TEST",
                                 "i:%d,j:%d,table_mul[i][j]:%d,table_div[i][j]:%d", i, j,
-                                table_mul[i][j], table_div[i][j]);*/
+                                table_mul[i][j], table_div[i][j]);
 
         }
     }
@@ -95,7 +100,7 @@ Java_com_zxc_jni_MatrixJNI_init(JNIEnv *env, jobject instance, jint m) {
 //乘法
 FFType multiplication(FFType a, FFType b) {
 
-    /*unsigned int p = 0;
+    unsigned int p = 0;
 
     for (int i = 0; i < 8; ++i) {
         if (a & 0x01) {
@@ -105,19 +110,21 @@ FFType multiplication(FFType a, FFType b) {
         int flag = (b & 0x80);
         b <<= 1;
         if (flag) {
-            b ^= 0x1B;  *//* P(x) = x^8 + x^4 + x^3 + x + 1 *//*
+            b ^= 0x1B;  /* P(x) = x^8 + x^4 + x^3 + x + 1 */
         }
 
         a >>= 1;
     }
 
-    return p;*/
+    return p;
 
 
 
 
     if (0 == a || 0 == b)
         return 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "multiplication",
+                        "a:%d,b:%d,table_index[a]:%d,table_index[b]:%d",a,b,table_index[a],table_index[b]);
     return table_alpha[(table_index[a] + table_index[b]) % (fFieldSize - 1)];
 }
 
@@ -277,10 +284,10 @@ Java_com_zxc_jni_MatrixJNI_multiply(JNIEnv *env, jobject instance, jbyteArray ma
     jsize oldsize2 = env->GetArrayLength(matrix2_);
     unsigned char *pData1 = (unsigned char *) olddata1;
     unsigned char *pData2 = (unsigned char *) olddata2;
-    /*for (int i = 0; i < oldsize1; ++i) {
+    for (int i = 0; i < oldsize1; ++i) {
         __android_log_print(ANDROID_LOG_DEBUG, "c++", "test:%02x,%d,%d", pData1[i], row1, col1);
     }
-*/
+
     // unsigned char pResult[row1 * col2];
     unsigned char *pResult = new unsigned char[row1 * col2];
     //gf_init(8, 0x00000187);
@@ -292,7 +299,7 @@ Java_com_zxc_jni_MatrixJNI_multiply(JNIEnv *env, jobject instance, jbyteArray ma
             temp = 0;
             for (int k = 0; k < col1; ++k) {
                 temp = ff_add(temp, ff_mul(pData1[i * col1 + k], pData2[k * col2 + j]));
-                //__android_log_print(ANDROID_LOG_DEBUG, "c++", "%02x", temp);
+                __android_log_print(ANDROID_LOG_DEBUG, "c++", "%02x", temp);
             }
             pResult[i * col2 + j] = temp;
         }
@@ -303,7 +310,7 @@ Java_com_zxc_jni_MatrixJNI_multiply(JNIEnv *env, jobject instance, jbyteArray ma
     jbyteArray jarrResult = env->NewByteArray(myLen);
     jbyte *jbyte1 = (jbyte *) pResult;
     env->SetByteArrayRegion(jarrResult, 0, myLen, jbyte1);
-    //__android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
+    __android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
 
     //释放空间
     delete[] pResult;
@@ -327,8 +334,10 @@ int getRank(JNIEnv *env, jbyteArray matrix, int nRow, int nCol) {
         M[i] = new unsigned int[nCol];
     }
 
+    unsigned int test = 0;
     for (int i = 0; i < nRow; i++) {
         for (int j = 0; j < nCol; j++) {
+            test = pData[i * nCol + j];
             M[i][j] = pData[i * nCol + j];
         }
     }

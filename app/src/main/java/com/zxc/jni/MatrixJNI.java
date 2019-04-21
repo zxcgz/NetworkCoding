@@ -14,7 +14,7 @@ public class MatrixJNI {
      */
     protected native byte[] inverse(byte[] arrayData, int nK);
     protected native int getRank(byte[] matrix,int nRow,int nCol) ;
-    protected native void init(int m,int prim) ;
+    protected native void init(int m) ;
     protected native byte[] multiply(byte[] matrix1, int row1, int col1, byte[] matrix2, int row2, int col2);
     protected native void free() ;
 }

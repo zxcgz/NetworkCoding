@@ -77,26 +77,13 @@ public class MainSendContentView extends MainContentView {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (null != data && null != data.getData()&&requestCode == DataUtils.CHOOSE_FILE_CODE) {
-            Log.d(TAG,"connectServer") ;
-            try {
-                String path = data.getData().getPath();
-                if (path!=null){
-                    //弹出Dialog显示操作进度
-                    SendDialogView view = new SendDialogView(mContext,data.getData()) ;
-                    view.show();
-                }
-                byte[] bytes = FileUtils.readLines(path);
-                Log.d(TAG,bytes+"") ;
-                //对文件进行分片
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(mContext, "好像出现了点问题", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "FileNotFoundException");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(mContext, "好像出现了点问题", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "IOException");
+        if (null != data && null != data.getData() && requestCode == DataUtils.CHOOSE_FILE_CODE) {
+            Log.d(TAG, "connectServer");
+            String path = data.getData().getPath();
+            if (path != null) {
+                //弹出Dialog显示操作进度
+                SendDialogView view = new SendDialogView(mContext, data.getData());
+                view.show();
             }
         }
     }

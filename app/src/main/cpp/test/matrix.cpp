@@ -3,7 +3,7 @@
 #include <android/log.h>
 
 #define  ff_add(a, b)    (a^b)
-#define  ff_sub(a, b)    (a^b)
+#define  ff_sub(a, b)    (!(a^b))
 
 #define  ff_mul(a, b)    (table_mul[a][b])
 #define  ff_div(a, b)    (table_div[a][b])
@@ -41,7 +41,7 @@ FFType prim_poly[13] =
 int getRank(JNIEnv *env, jbyteArray matrix, int nRow, int nCol);
 
 //乘法
-FFType multiplication(FFType a, FFType b);
+char multiplication(char a, char b);
 
 //除法
 FFType division(FFType a, FFType b);
@@ -51,74 +51,62 @@ FFType exponent(FFType a, FFType n);
 
 //int tag = 0 ;
 
+int M;
+
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_zxc_jni_MatrixJNI_init(JNIEnv *env, jobject instance, jint m) {
-    jint i = 0, j = 0;
-    if (m > 12)
-        return;
-    fFieldSize = 1 << m;
-    int prim = prim_poly[m];
-    /*if (prim == 0)
-        prim = prim_poly[m];*/
-    table_alpha = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-    table_index = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-    table_div = (FFType **) malloc(sizeof(FFType *)*fFieldSize);
-    table_mul = (FFType **) malloc(sizeof(FFType *)*fFieldSize);
-    for (i = 0; i < fFieldSize; i++) {
-        table_mul[i] = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-        table_div[i] = (FFType *) malloc(sizeof(FFType)*fFieldSize);
-    }
-    table_alpha[0] = 1;
-    //TODO 无符号整型中的-1
-    table_index[0] = -1;
-    for (i = 1; i < fFieldSize; i++) {
-        table_alpha[i] = table_alpha[i - 1] << 1;
-        if (table_alpha[i] >= fFieldSize) {
-            table_alpha[i] ^= prim;
-        }
-        table_index[table_alpha[i]] = i;
-    }
-    table_index[1] = 0;
-    for (i = 0; i < fFieldSize; i++) {
-        for (j = 0; j < fFieldSize; ++j) {
-            table_mul[i][j] = multiplication(i, j);
-            table_div[i][j] = division(i, j);
-            /*__android_log_print(ANDROID_LOG_DEBUG, "FOR TEST",
-                                "i:%d,j:%d,table_mul[i][j]:%d,table_div[i][j]:%d", i, j,
-                                table_mul[i][j], table_div[i][j]);*/
+    int table[256];
+    int i;
+    table[0] = 1;//g^0
+    for(i = 1; i < 255; ++i)//生成元为x + 1
+    {
+        //下面是m_table[i] = m_table[i-1] * (x + 1)的简写形式
+        table[i] = (table[i-1] << 1 ) ^ table[i-1];
 
+        //最高指数已经到了8，需要模上m(x)
+        if( table[i] & 0x100 )
+        {
+            table[i] ^= 0x11B;//用到了前面说到的乘法技巧
         }
     }
+    int arc_table[256];
+
+    for(i = 0; i < 255; ++i)
+        arc_table[ table[i] ] = i;
+    int inverse_table[256];
+
+    for(i = 1; i < 256; ++i)//0没有逆元，所以从1开始
+    {
+        int k = arc_table[i];
+        k = 255 - k;
+        k %= 255;//m_table的取值范围为 [0, 254]
+        inverse_table[i] = table[k];
+    }
+    M = m;
 }//矩阵初始化
 
 //乘法
-FFType multiplication(FFType a, FFType b) {
+jbyte multiplication(jbyte u, jbyte v) {
 
-    /*unsigned int p = 0;
+    jbyte p = 0;
 
     for (int i = 0; i < 8; ++i) {
-        if (a & 0x01) {
-            p ^= b;
+        if (u & 0x01) {
+            p ^= v;
         }
 
-        int flag = (b & 0x80);
-        b <<= 1;
+        jbyte flag = v & 0x80;
+        v <<= 1;
         if (flag) {
-            b ^= 0x1B;  *//* P(x) = x^8 + x^4 + x^3 + x + 1 *//*
+            v ^= 0x1B;  /* P(x) = x^8 + x^4 + x^3 + x + 1 */
         }
-
-        a >>= 1;
+        //__android_log_print(ANDROID_LOG_DEBUG,"multiplication","u:%x,p:%x",u,p) ;
+        u >>= 1;
     }
 
-    return p;*/
-
-
-
-
-    if (0 == a || 0 == b)
-        return 0;
-    return table_alpha[(table_index[a] + table_index[b]) % (fFieldSize - 1)];
+    return p;
 }
 
 //除法
@@ -275,24 +263,26 @@ Java_com_zxc_jni_MatrixJNI_multiply(JNIEnv *env, jobject instance, jbyteArray ma
     //矩阵2
     jbyte *olddata2 = env->GetByteArrayElements(matrix2_, NULL);
     jsize oldsize2 = env->GetArrayLength(matrix2_);
-    unsigned char *pData1 = (unsigned char *) olddata1;
-    unsigned char *pData2 = (unsigned char *) olddata2;
-    /*for (int i = 0; i < oldsize1; ++i) {
+    unsigned char *pData1 = (unsigned char *) env->GetByteArrayElements(matrix1_, NULL);
+    unsigned char *pData2 = (unsigned char *) env->GetByteArrayElements(matrix2_, NULL);
+    for (int i = 0; i < oldsize1; ++i) {
         __android_log_print(ANDROID_LOG_DEBUG, "c++", "test:%02x,%d,%d", pData1[i], row1, col1);
     }
-*/
+
     // unsigned char pResult[row1 * col2];
-    unsigned char *pResult = new unsigned char[row1 * col2];
+    jbyte *pResult = new jbyte[row1 * col2];
     //gf_init(8, 0x00000187);
     //相乘
-    unsigned char temp = 0;
-
+    jbyte temp = 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "jbyteSize", "%d", sizeof(jbyte));
     for (int i = 0; i < row1; ++i) {
         for (int j = 0; j < col2; ++j) {
             temp = 0;
             for (int k = 0; k < col1; ++k) {
-                temp = ff_add(temp, ff_mul(pData1[i * col1 + k], pData2[k * col2 + j]));
-                //__android_log_print(ANDROID_LOG_DEBUG, "c++", "%02x", temp);
+                temp = ff_add(temp, multiplication(olddata1[i * col1 + k], olddata2[k * col2 + j]));
+
+                if (i < 10 && j < 10)
+                    __android_log_print(ANDROID_LOG_DEBUG, "c++", "%02x", temp);
             }
             pResult[i * col2 + j] = temp;
         }
@@ -301,10 +291,12 @@ Java_com_zxc_jni_MatrixJNI_multiply(JNIEnv *env, jobject instance, jbyteArray ma
     //转化数组
     jsize myLen = row1 * col2;
     jbyteArray jarrResult = env->NewByteArray(myLen);
-    jbyte *jbyte1 = (jbyte *) pResult;
+    jbyte *jbyte1 = pResult;
     env->SetByteArrayRegion(jarrResult, 0, myLen, jbyte1);
-    //__android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
-
+    /*__android_log_print(ANDROID_LOG_DEBUG, "c++", "hello native log");
+    for (int i = 0; i < row1 * col2; ++i) {
+        __android_log_print(ANDROID_LOG_DEBUG,"pResult","%d,%x",jarrResult[i],jarrResult[i]) ;
+    }*/
     //释放空间
     delete[] pResult;
 
@@ -327,8 +319,10 @@ int getRank(JNIEnv *env, jbyteArray matrix, int nRow, int nCol) {
         M[i] = new unsigned int[nCol];
     }
 
+    unsigned int test = 0;
     for (int i = 0; i < nRow; i++) {
         for (int j = 0; j < nCol; j++) {
+            test = pData[i * nCol + j];
             M[i][j] = pData[i * nCol + j];
         }
     }

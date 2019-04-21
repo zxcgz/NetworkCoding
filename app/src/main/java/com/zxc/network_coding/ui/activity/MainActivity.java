@@ -14,8 +14,6 @@ import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.zxc.network_coding.R;
 import com.zxc.network_coding.controller.listener.MainNavItemSelectedListener;
-import com.zxc.network_coding.service.INetworkServiceBinder;
-import com.zxc.network_coding.service.NetworkServiceConnection;
 import com.zxc.network_coding.ui.view.MainContentView;
 
 public class MainActivity extends AppCompatActivity {

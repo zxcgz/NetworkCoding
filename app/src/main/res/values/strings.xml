@@ -18,5 +18,8 @@
     <string name="file">文件</string>
     <string name="positive">确定</string>
     <string name="negative">取消</string>
+    <string name="database_not_init">数据库还没有初始化</string>
+    <string name="something_wrong">出现了点问题</string>
+    <string name="no_internet">没有网络</string>
 
 </resources>

@@ -22,9 +22,16 @@ android {
         }
     }
     externalNativeBuild {
+        /*cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }*/
         cmake {
             path "src/main/cpp/CMakeLists.txt"
         }
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
     }
 }
 apply plugin: 'com.android.application'

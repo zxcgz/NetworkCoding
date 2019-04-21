@@ -1,11 +1,11 @@
-package com.zxc.network_coding.service;
+package com.zxc.network_coding.service.network;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-public class NetworkServiceConnection implements ServiceConnection {
+public class NetworkServiceConnection implements ServiceConnection{
 
     private static final String TAG = "NetworkServiceConnect";
     private static NetworkServiceConnection networkServiceConnection = null;
